@@ -1,0 +1,108 @@
+{% load static %}
+
+<div id="widget-{{ widget.id }}" 
+     class="widget"
+     data-widget-id="{{ widget.id }}"
+     data-widget-type="{{ widget.widget_type }}"
+     data-refresh-interval="{{ widget.refresh_interval }}">
+    
+    <div class="widget-header">
+        <h3>{{ widget.title }}</h3>
+        <div class="widget-actions">
+            <button class="btn btn-sm btn-light" onclick="dashboardManager.refreshWidget('{{ widget.id }}')">
+                <i class="fas fa-sync"></i>
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-sm btn-light dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="dashboardManager.exportWidgetData('{{ widget.id }}', 'excel')">
+                            <i class="fas fa-file-excel"></i> Excel'e Aktar
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="dashboardManager.exportWidgetData('{{ widget.id }}', 'pdf')">
+                            <i class="fas fa-file-pdf"></i> PDF'e Aktar
+                        </a>
+                    </li>
+                    {% if widget.refresh_interval > 0 %}
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="dashboardManager.stopAutoRefresh('{{ widget.id }}')">
+                            <i class="fas fa-clock"></i> Otomatik Yenilemeyi Durdur
+                        </a>
+                    </li>
+                    {% endif %}
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#" onclick="deleteWidget('{{ widget.id }}')">
+                            <i class="fas fa-trash"></i> Sil
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+    
+    <div class="widget-content">
+        <canvas id="chart-{{ widget.id }}"></canvas>
+    </div>
+    
+    {% if widget.description %}
+    <div class="widget-footer">
+        <small class="text-muted">
+            <i class="fas fa-info-circle"></i> {{ widget.description }}
+        </small>
+    </div>
+    {% endif %}
+</div>
+
+<style>
+.widget {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    padding: 1rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.widget-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.widget-header h3 {
+    margin: 0;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.widget-actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.widget-content {
+    flex: 1;
+    min-height: 200px;
+    position: relative;
+}
+
+.widget-footer {
+    margin-top: 1rem;
+    padding-top: 0.5rem;
+    border-top: 1px solid #eee;
+}
+
+canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+</style>

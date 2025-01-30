@@ -1,0 +1,65 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}Zamanlanmış Rapor{% endblock %}
+
+{% block content %}
+<h2>Sayın {{ user.get_full_name }},</h2>
+
+<p>Zamanlanmış raporunuz otomatik olarak oluşturuldu.</p>
+
+<div class="info-box">
+    <h3>Rapor Detayları</h3>
+    <ul>
+        <li><strong>Rapor Adı:</strong> {{ report.title }}</li>
+        <li><strong>Zamanlama:</strong> {{ report.get_schedule_frequency_display }}</li>
+        <li><strong>Rapor Tipi:</strong> {{ report.get_report_type_display }}</li>
+        <li><strong>Tarih Aralığı:</strong> {{ report.start_date|date:"d.m.Y" }} - {{ report.end_date|date:"d.m.Y" }}</li>
+    </ul>
+</div>
+
+{% if highlights %}
+<div class="info-box">
+    <h3>Öne Çıkanlar</h3>
+    <table>
+    {% for key, value in highlights.items %}
+        <tr>
+            <th>{{ key }}</th>
+            <td>{{ value }}</td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+{% if changes %}
+<div class="info-box">
+    <h3>Önceki Rapora Göre Değişiklikler</h3>
+    <table>
+    {% for change in changes %}
+        <tr>
+            <th>{{ change.metric }}</th>
+            <td>
+                {% if change.trend == 'up' %}
+                    🔺 {{ change.percentage }}% artış
+                {% else %}
+                    🔻 {{ change.percentage }}% azalış
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+    </table>
+</div>
+{% endif %}
+
+<p>Detaylı raporu görüntülemek için aşağıdaki butona tıklayabilirsiniz:</p>
+
+<a href="{{ report_url }}" class="button">Raporu Görüntüle</a>
+
+<div class="info-box">
+    <h3>Rapor Ayarları</h3>
+    <p>Bu rapor {{ report.get_schedule_frequency_display }} olarak otomatik oluşturulmaktadır.</p>
+    <p>Rapor ayarlarını değiştirmek için:</p>
+    <a href="{{ settings_url }}" class="button">Ayarları Düzenle</a>
+</div>
+
+{% endblock %}

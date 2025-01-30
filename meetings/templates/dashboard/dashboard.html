@@ -1,0 +1,290 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}{{ dashboard.title }} - Dashboard{% endblock %}
+
+{% block extra_css %}
+<link href="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.2.3/gridstack.min.css" rel="stylesheet">
+<style>
+.dashboard-container {
+    padding: 1rem;
+}
+
+.grid-stack {
+    background: #f8f9fa;
+    border-radius: 8px;
+    min-height: 500px;
+}
+
+.grid-stack-item {
+    padding: 5px;
+}
+
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.dashboard-actions {
+    display: flex;
+    gap: 1rem;
+}
+
+.add-widget-btn {
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: #3498db;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+    transition: transform 0.2s;
+}
+
+.add-widget-btn:hover {
+    transform: scale(1.1);
+}
+
+.widget-type-select {
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.widget-type-item {
+    display: flex;
+    align-items: center;
+    padding: 1rem;
+    border: 1px solid #eee;
+    border-radius: 8px;
+    margin-bottom: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.widget-type-item:hover {
+    background: #f8f9fa;
+    border-color: #3498db;
+}
+
+.widget-type-icon {
+    width: 40px;
+    height: 40px;
+    margin-right: 1rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #eee;
+    border-radius: 8px;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container">
+    <div class="dashboard-header">
+        <div>
+            <h1>{{ dashboard.title }}</h1>
+            <p class="text-muted">
+                Son güncelleme: {{ dashboard.updated_at|date:"d.m.Y H:i" }}
+                {% if dashboard.is_public %}
+                <span class="badge bg-info ms-2">Herkese Açık</span>
+                {% endif %}
+            </p>
+        </div>
+        
+        <div class="dashboard-actions">
+            <button class="btn btn-outline-primary" onclick="shareDashboard()">
+                <i class="fas fa-share-alt"></i> Paylaş
+            </button>
+            <div class="dropdown">
+                <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">
+                    <i class="fas fa-ellipsis-v"></i>
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end">
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportDashboard('excel')">
+                            <i class="fas fa-file-excel"></i> Excel'e Aktar
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="exportDashboard('pdf')">
+                            <i class="fas fa-file-pdf"></i> PDF'e Aktar
+                        </a>
+                    </li>
+                    <li>
+                        <hr class="dropdown-divider">
+                    </li>
+                    <li>
+                        <a class="dropdown-item" href="#" onclick="editDashboard()">
+                            <i class="fas fa-edit"></i> Düzenle
+                        </a>
+                    </li>
+                    <li>
+                        <a class="dropdown-item text-danger" href="#" onclick="deleteDashboard()">
+                            <i class="fas fa-trash"></i> Sil
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="grid-stack">
+        {% for widget in dashboard.widgets.all %}
+            <div class="grid-stack-item"
+                 gs-x="{{ widget.position.x }}" 
+                 gs-y="{{ widget.position.y }}"
+                 gs-w="{{ widget.position.w }}" 
+                 gs-h="{{ widget.position.h }}">
+                {% include "dashboard/widget.html" with widget=widget %}
+            </div>
+        {% endfor %}
+    </div>
+
+    <button class="add-widget-btn" data-bs-toggle="modal" data-bs-target="#addWidgetModal">
+        <i class="fas fa-plus fa-lg"></i>
+    </button>
+</div>
+
+<!-- Widget Ekleme Modal -->
+<div class="modal fade" id="addWidgetModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Widget Ekle</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div class="widget-type-select">
+                    {% for type in widget_types %}
+                    <div class="widget-type-item" onclick="addWidget('{{ type.id }}')">
+                        <div class="widget-type-icon">
+                            <i class="{{ type.icon }}"></i>
+                        </div>
+                        <div>
+                            <h6>{{ type.name }}</h6>
+                            <small class="text-muted">{{ type.description }}</small>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gridstack.js/7.2.3/gridstack-all.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{% static 'js/charts.js' %}"></script>
+<script src="{% static 'js/dashboard.js' %}"></script>
+
+<script>
+const grid = GridStack.init({
+    column: 12,
+    cellHeight: 50,
+    animate: true,
+    draggable: {
+        handle: '.widget-header'
+    }
+});
+
+grid.on('change', function(event, items) {
+    items.forEach(item => {
+        const widgetId = item.el.querySelector('[data-widget-id]').dataset.widgetId;
+        const position = {
+            x: item.x,
+            y: item.y,
+            w: item.w,
+            h: item.h
+        };
+        
+        fetch(`/api/dashboard-widgets/${widgetId}/position/`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify(position)
+        });
+        
+        dashboardManager.updateWidgetLayout(widgetId, position);
+    });
+});
+
+function getCsrfToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]').value;
+}
+
+async function addWidget(typeId) {
+    try {
+        const response = await fetch('/api/dashboard-widgets/', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCsrfToken()
+            },
+            body: JSON.stringify({
+                dashboard_id: '{{ dashboard.id }}',
+                widget_type: typeId
+            })
+        });
+        
+        if (!response.ok) throw new Error('Widget eklenemedi');
+        
+        location.reload();
+    } catch (error) {
+        console.error(`Widget ekleme hatası: ${error}`);
+    }
+}
+
+async function shareDashboard() {
+    // Share modal implementation
+}
+
+async function exportDashboard(format) {
+    try {
+        const response = await fetch(`/api/dashboards/{{ dashboard.id }}/export/?format=${format}`);
+        if (!response.ok) throw new Error('Dashboard dışa aktarılamadı');
+        
+        const blob = await response.blob();
+        const url = window.URL.createObjectURL(blob);
+        
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `dashboard-{{ dashboard.id }}-export.${format}`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        window.URL.revokeObjectURL(url);
+    } catch (error) {
+        console.error(`Dashboard dışa aktarma hatası: ${error}`);
+    }
+}
+
+function editDashboard() {
+    location.href = `/dashboards/{{ dashboard.id }}/edit/`;
+}
+
+function deleteDashboard() {
+    if (confirm('Bu dashboard\'u silmek istediğinize emin misiniz?')) {
+        fetch(`/api/dashboards/{{ dashboard.id }}/`, {
+            method: 'DELETE',
+            headers: {
+                'X-CSRFToken': getCsrfToken()
+            }
+        }).then(() => {
+            location.href = '/dashboards/';
+        });
+    }
+}
+</script>
+{% endblock %}

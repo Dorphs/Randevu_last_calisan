@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { padding: 20px; }
+        .header { background-color: #f8f9fa; padding: 10px; margin-bottom: 20px; }
+        .section { margin: 20px 0; }
+        .meeting-item { border-left: 3px solid #007bff; padding-left: 10px; margin: 10px 0; }
+        .footer { color: #6c757d; font-size: 12px; margin-top: 30px; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h2>Günlük Toplantı Raporu - {{ today|date:"d.m.Y" }}</h2>
+        </div>
+
+        <div class="section">
+            <h3>Bugünün Toplantıları</h3>
+            {% if todays_meetings %}
+                {% for meeting in todays_meetings %}
+                <div class="meeting-item">
+                    <p><strong>{{ meeting.title }}</strong></p>
+                    <ul>
+                        <li>Saat: {{ meeting.start_time|date:"H:i" }} - {{ meeting.end_time|date:"H:i" }}</li>
+                        <li>Ziyaretçi: {{ meeting.visitor.name }}</li>
+                        <li>Konum: {{ meeting.location|default:meeting.external_location }}</li>
+                        <li>Durum: {{ meeting.get_status_display }}</li>
+                    </ul>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Bugün için planlanmış toplantı bulunmamaktadır.</p>
+            {% endif %}
+        </div>
+
+        <div class="section">
+            <h3>Yarının Toplantıları</h3>
+            {% if tomorrows_meetings %}
+                {% for meeting in tomorrows_meetings %}
+                <div class="meeting-item">
+                    <p><strong>{{ meeting.title }}</strong></p>
+                    <ul>
+                        <li>Saat: {{ meeting.start_time|date:"H:i" }} - {{ meeting.end_time|date:"H:i" }}</li>
+                        <li>Ziyaretçi: {{ meeting.visitor.name }}</li>
+                        <li>Konum: {{ meeting.location|default:meeting.external_location }}</li>
+                        <li>Durum: {{ meeting.get_status_display }}</li>
+                    </ul>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p>Yarın için planlanmış toplantı bulunmamaktadır.</p>
+            {% endif %}
+        </div>
+
+        <div class="footer">
+            <p>Bu rapor otomatik olarak oluşturulmuştur.</p>
+        </div>
+    </div>
+</body>
+</html>
