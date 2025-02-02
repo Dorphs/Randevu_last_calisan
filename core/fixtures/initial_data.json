@@ -1,0 +1,145 @@
+[
+    {
+        "model": "auth.user",
+        "pk": 1,
+        "fields": {
+            "username": "admin",
+            "password": "pbkdf2_sha256$600000$dK6JYMHHBwSNtXxDXHhvqP$bFY3siGGNxw4TxlT6QqHVhYjF6HaVd+RbBUXeYoVyOk=",
+            "is_superuser": true,
+            "is_staff": true,
+            "is_active": true,
+            "first_name": "Admin",
+            "last_name": "User",
+            "email": "admin@example.com"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 2,
+        "fields": {
+            "username": "ahmet",
+            "password": "pbkdf2_sha256$600000$dK6JYMHHBwSNtXxDXHhvqP$bFY3siGGNxw4TxlT6QqHVhYjF6HaVd+RbBUXeYoVyOk=",
+            "is_superuser": false,
+            "is_staff": true,
+            "is_active": true,
+            "first_name": "Ahmet",
+            "last_name": "Yılmaz",
+            "email": "ahmet@example.com"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 3,
+        "fields": {
+            "username": "ayse",
+            "password": "pbkdf2_sha256$600000$dK6JYMHHBwSNtXxDXHhvqP$bFY3siGGNxw4TxlT6QqHVhYjF6HaVd+RbBUXeYoVyOk=",
+            "is_superuser": false,
+            "is_staff": true,
+            "is_active": true,
+            "first_name": "Ayşe",
+            "last_name": "Demir",
+            "email": "ayse@example.com"
+        }
+    },
+    {
+        "model": "auth.user",
+        "pk": 4,
+        "fields": {
+            "username": "mehmet",
+            "password": "pbkdf2_sha256$600000$dK6JYMHHBwSNtXxDXHhvqP$bFY3siGGNxw4TxlT6QqHVhYjF6HaVd+RbBUXeYoVyOk=",
+            "is_superuser": false,
+            "is_staff": true,
+            "is_active": true,
+            "first_name": "Mehmet",
+            "last_name": "Kaya",
+            "email": "mehmet@example.com"
+        }
+    },
+    {
+        "model": "core.toplantiodasi",
+        "pk": 1,
+        "fields": {
+            "ad": "Yönetim Kurulu Odası",
+            "kapasite": 20,
+            "aciklama": "Büyük toplantılar için uygun"
+        }
+    },
+    {
+        "model": "core.toplantiodasi",
+        "pk": 2,
+        "fields": {
+            "ad": "Küçük Toplantı Odası",
+            "kapasite": 8,
+            "aciklama": "Küçük grup toplantıları için"
+        }
+    },
+    {
+        "model": "core.toplantiodasi",
+        "pk": 3,
+        "fields": {
+            "ad": "Görüşme Odası",
+            "kapasite": 4,
+            "aciklama": "Birebir görüşmeler için"
+        }
+    },
+    {
+        "model": "core.kurumdisikatilimci",
+        "pk": 1,
+        "fields": {
+            "ad": "Ali",
+            "soyad": "Öztürk",
+            "kurum_unvan": "ABC Şirketi / Müdür",
+            "email": "ali@abc.com"
+        }
+    },
+    {
+        "model": "core.kurumdisikatilimci",
+        "pk": 2,
+        "fields": {
+            "ad": "Zeynep",
+            "soyad": "Şahin",
+            "kurum_unvan": "XYZ Ltd. / Direktör",
+            "email": "zeynep@xyz.com"
+        }
+    },
+    {
+        "model": "core.kurumdisikatilimci",
+        "pk": 3,
+        "fields": {
+            "ad": "Can",
+            "soyad": "Yıldız",
+            "kurum_unvan": "123 A.Ş. / Genel Müdür",
+            "email": "can@123.com"
+        }
+    },
+    {
+        "model": "core.kurumdisiziyaretci",
+        "pk": 1,
+        "fields": {
+            "ad": "Deniz",
+            "soyad": "Aydın",
+            "telefon": "5551234567",
+            "kurum_unvan": "ABC Şirketi / Mühendis"
+        }
+    },
+    {
+        "model": "core.kurumdisiziyaretci",
+        "pk": 2,
+        "fields": {
+            "ad": "Murat",
+            "soyad": "Güneş",
+            "telefon": "5559876543",
+            "kurum_unvan": "XYZ Ltd. / Uzman"
+        }
+    },
+    {
+        "model": "core.kurumdisiziyaretci",
+        "pk": 3,
+        "fields": {
+            "ad": "Selin",
+            "soyad": "Yıldırım",
+            "telefon": "5553334444",
+            "kurum_unvan": "123 A.Ş. / Danışman"
+        }
+    }
+]
